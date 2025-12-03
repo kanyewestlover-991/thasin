@@ -10,6 +10,138 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Global responsive fixes and type adjustments */
+        :root{ --accent-blue:#1db954; }
+        html,body{height:100%;margin:0;padding:0;box-sizing:border-box;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+        *,*::before,*::after{box-sizing:inherit}
+        body{font-family:"Helvetica Neue", Helvetica, Arial, system-ui, -apple-system, 'Inter', sans-serif; font-weight:300; color:#ffffff;background:#0b0b0b;letter-spacing:-0.05em;}
+
+        /* Force all text to be white for consistent look */
+        body, body * { color: #ffffff !important; }
+
+        /* Prevent horizontal scrolling from large images or fixed widths */
+        img,video,canvas{max-width:100%;height:auto;display:block}
+        /* expand content containers to full viewport width */
+        .section-content{padding:28px;max-width:100%;width:100%;margin:0}
+
+        /* Hero layout: keep desktop-like side-by-side appearance on tablets and phones */
+        .hero-content-wrapper{display:flex !important;flex-direction:row !important;align-items:center !important;justify-content:space-between !important;gap:28px;padding:28px 18px;width:100%;max-width:100%;margin:0;flex-wrap:nowrap !important;overflow:visible}
+        .hero-left-panel{order:1;flex:1 1 55% !important;min-width:0 !important;box-sizing:border-box;padding-right:12px}
+        .hero-right-panel{order:2;flex:0 0 40% !important;display:flex !important;align-items:center !important;justify-content:center !important;min-width:0 !important}
+        .hero-artist-image-container{width:100%;display:flex;align-items:center;justify-content:center}
+        .hero-artist-image-container img{display:block;width:100%;height:auto;max-width:420px;object-fit:cover;border-radius:8px}
+
+        /* Force image on right and content on left across all sizes */
+        .hero-left-panel{text-align:left}
+        .hero-right-panel{text-align:right}
+
+        /* Ensure flex children can shrink without causing overflow */
+        .hero-left-panel, .hero-right-panel{min-width:0}
+
+        /* Footer nav spacing */
+        .footer-nav{margin-right:50px}
+
+        /* Music table responsive styling */
+        .music-table{width:100%;border-collapse:collapse}
+        .music-table-td{padding:8px 10px;vertical-align:middle}
+        .cover-col .album-cover-img.small{width:90px;height:56px;object-fit:cover;border-radius:4px}
+        .title-col .album-play-link{color:inherit;text-decoration:none;font-weight:600}
+        .music-table-row.active-row{background:rgba(255,255,255,0.03)}
+
+        /* Footer audio player: responsive, accessible and fixed at bottom on small screens */
+        #audio-player-footer{position:sticky;bottom:0;left:0;right:0;background:rgba(10,10,10,0.9);border-top:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px);display:flex;align-items:center;gap:12px;padding:10px 14px;z-index:60}
+        .player-controls{display:flex;align-items:center;gap:8px}
+        .control-btn{background:transparent;border:none;color:#cfcfcf;font-size:16px;padding:8px;border-radius:6px}
+        .control-btn.main-play-btn{font-size:18px;padding:10px 12px}
+        .control-btn:active{transform:scale(0.98)}
+        .control-btn.active, .control-btn.active i{color:var(--accent-blue)}
+
+        /* Shuffle active state */
+        #shuffle-btn.active{color:var(--accent-blue)}
+
+        .song-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+        #current-song-title{font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        #current-song-artist{font-size:0.78rem;color:rgba(224,224,224,0.6)}
+
+        .progress-container{width:150px;height:6px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden}
+        .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent-blue),#25c06b)}
+
+        /* Footer nav and footer sections responsiveness */
+        .footer-content{display:flex;gap:22px;flex-wrap:wrap}
+        .footer-column{flex:1 1 200px;min-width:160px}
+        .footer-legal{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+        /* Bundle card / secret vault stacking helper classes (if present) */
+        .bundle-card,.secret-vault{width:100%;box-sizing:border-box}
+
+        /* Mobile first adjustments */
+        @media (max-width: 768px){
+            .section-content{padding:18px}
+            #audio-player-footer{padding:8px 10px;gap:8px}
+            .progress-container{width:110px}
+            .player-controls{gap:6px}
+            #current-song-title{font-size:0.9rem}
+        }
+
+        @media (max-width: 420px){
+            /* On narrow phones, stack controls vertically to avoid crowding */
+            #audio-player-footer{flex-direction:column;align-items:flex-start;padding:10px}
+            .player-controls{order:2;width:100%;justify-content:flex-start}
+            .song-info{order:1;width:100%}
+            .progress-container{order:3;width:100%}
+            /* Reduce footer-nav margin on very small screens */
+            .footer-nav{margin-right:12px}
+            /* Keep hero side-by-side even on very small phones (scale image down) */
+            .hero-content-wrapper{gap:12px;padding:12px 10px}
+            .hero-left-panel{flex:1 1 65% !important;padding-right:8px}
+            .hero-right-panel{flex:0 0 35% !important}
+            .hero-artist-image-container img{max-width:220px}
+        }
+
+        /* Improve readability on tablets */
+        @media (min-width: 769px) and (max-width: 1024px){
+            body{font-size:15px}
+        }
+        @media (max-width: 600px){
+            .cover-col .album-cover-img.small{width:72px;height:48px}
+            .title-col .album-play-link{font-size:0.95rem}
+        }
+
+        /* Custom cursor styling: large outline by default, fills on hover */
+        .custom-cursor{position:fixed;left:0;top:0;pointer-events:none;z-index:9999;width:34px;height:34px;border-radius:50%;background:transparent;border:2px solid rgba(255,255,255,0.95);opacity:0.95;transform:translate(-50%, -50%);transition:width .12s ease,height .12s ease,background .12s ease,opacity .12s ease,border-color .12s ease}
+        /* fill when hovering interactive elements */
+        .custom-cursor.hovered{width:22px;height:22px;background:var(--accent-blue);border-color:transparent;opacity:0.98}
+
+        /* Hide custom cursor on touch devices or when hover not supported */
+        @media (hover: none), (max-width: 700px){
+            .custom-cursor{display:none !important}
+        }
+        /* Volume control styling for footer */
+        .volume-control{display:flex;align-items:center;gap:8px}
+        #volume-btn.control-btn{font-size:16px;padding:6px}
+        #volume-slider{width:110px;appearance:none;background:transparent;height:6px}
+        #volume-slider::-webkit-slider-runnable-track{height:6px;background:rgba(255,255,255,0.12);border-radius:4px}
+        #volume-slider::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;margin-top:-3px}
+        #volume-slider:focus{outline:none}
+        @media (max-width:420px){
+            .volume-control{width:100%;justify-content:flex-start}
+            #volume-slider{width:90px}
+        }
+
+        /* Audio footer layout: left controls, centered seek, right volume - enforce with !important */
+        #audio-player-footer{display:flex !important;align-items:center !important;justify-content:space-between !important;padding:10px 14px !important}
+        .player-left{display:flex;align-items:center;gap:10px;order:1;flex:0 0 auto}
+        .player-controls{order:1;margin-right:6px}
+        .song-info{order:1;min-width:0}
+        .progress-container{order:2;flex:1 1 auto !important;max-width:none !important;margin:0 12px;align-self:center;display:flex;align-items:center;gap:10px;width:100%}
+        .progress-time{font-size:0.82rem;color:rgba(255,255,255,0.7);min-width:36px;text-align:center}
+        .progress-track{position:relative;flex:1;width:100%;height:8px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:visible}
+        .progress-filled{position:absolute;left:0;top:0;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent-blue),#25c06b)}
+        .progress-thumb{position:absolute;top:50%;left:0;width:14px;height:14px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,0.4)}
+        .progress-track:active .progress-thumb{transform:translate(-50%,-50%) scale(1.05)}
+        .volume-control{order:3;flex:0 0 auto;margin-left:8px}
+    </style>
 </head>
 
 <body>
@@ -234,23 +366,69 @@
 
     <div id="audio-player-footer">
         <audio id="audio-source" preload="auto"></audio>
-        <div class="player-controls">
-            <button id="shuffle-btn" class="control-btn"><i class="fas fa-random"></i></button>
-            <button id="prev-btn" class="control-btn"><i class="fas fa-backward"></i></button>
-            <button id="play-pause-btn" class="control-btn main-play-btn"><i class="fas fa-play"></i></button>
-            <button id="next-btn" class="control-btn"><i class="fas fa-forward"></i></button>
-            <button id="loop-btn" class="control-btn"><i class="fas fa-redo"></i></button>
-        </div>
-        <div class="song-info">
-            <span id="current-song-title">Select a song to play</span>
-            <span id="current-song-artist"></span>
+        <div class="player-left">
+            <div class="player-controls">
+                <button id="shuffle-btn" class="control-btn"><i class="fas fa-random"></i></button>
+                <button id="prev-btn" class="control-btn"><i class="fas fa-backward"></i></button>
+                <button id="play-pause-btn" class="control-btn main-play-btn"><i class="fas fa-play"></i></button>
+                <button id="next-btn" class="control-btn"><i class="fas fa-forward"></i></button>
+                <button id="loop-btn" class="control-btn"><i class="fas fa-redo"></i></button>
+            </div>
+            <div class="song-info">
+                <span id="current-song-title">Select a song to play</span>
+                <span id="current-song-artist"></span>
+            </div>
         </div>
         <div class="progress-container" id="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-time time-current" id="time-current">0:00</div>
+            <div class="progress-track" id="progress-track">
+                <div class="progress-filled" id="progress-filled"></div>
+                <div class="progress-thumb" id="progress-thumb" aria-hidden="true"></div>
+            </div>
+            <div class="progress-time time-total" id="time-total">0:00</div>
+        </div>
+        <div class="volume-control">
+            <button id="volume-btn" class="control-btn" title="Toggle mute"><i class="fas fa-volume-up"></i></button>
+            <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume slider">
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Shuffle toggle: set active class, persist preference, and dispatch an event
+        (function(){
+            function ready(fn){ if(document.readyState!='loading') fn(); else document.addEventListener('DOMContentLoaded',fn); }
+            ready(function(){
+                var shuffleBtn = document.getElementById('shuffle-btn');
+                if(!shuffleBtn) return;
+
+                // initialize from localStorage
+                try{
+                    var pref = localStorage.getItem('thasinn_shuffle');
+                    if(pref === '1') shuffleBtn.classList.add('active');
+                }catch(e){/* ignore */}
+
+                function setShuffleState(enabled){
+                    if(enabled) shuffleBtn.classList.add('active'); else shuffleBtn.classList.remove('active');
+                    try{ localStorage.setItem('thasinn_shuffle', enabled? '1' : '0'); }catch(e){}
+                    // dispatch a global event for existing player code to pick up
+                    var ev = new CustomEvent('thasinn:shuffle', { detail: { enabled: !!enabled } });
+                    window.dispatchEvent(ev);
+                }
+
+                shuffleBtn.addEventListener('click', function(e){
+                    var enabled = !shuffleBtn.classList.contains('active');
+                    setShuffleState(enabled);
+                    shuffleBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+                    shuffleBtn.title = enabled ? 'Shuffle On' : 'Shuffle Off';
+                });
+
+                // expose simple API for other scripts if needed
+                window.ThasinnAudio = window.ThasinnAudio || {};
+                window.ThasinnAudio.setShuffle = setShuffleState;
+            });
+        })();
+    </script>
 </body>
 
 </html>
